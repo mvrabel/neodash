@@ -12,9 +12,6 @@ image:
   tag: 'latest'
 imagePullSecrets: [] # Image pull secret if any
 
-# Init containers
-initContainers: []
-
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
@@ -50,11 +47,11 @@ env:
 # Environment variable from secret
 envFromSecrets: []
   # standaloneUsername:
-  # secretName: "neo4j-connection-secrets"
-  # key: "username"
+      # secretName: "neo4j-connection-secrets"
+      # key: "username"
   # standalonePassword:
-  # secretName: "neo4j-connection-secrets"
-# key: "password"
+      # secretName: "neo4j-connection-secrets"
+      # key: "password"
 
 # Service details
 service:
@@ -72,7 +69,7 @@ ingress:
     # - host: neodash.example.com
     #   paths:
     #     - path: '/'
-  #       pathType: Prefix
+    #       pathType: Prefix
   tls: []
 
 # Pod resources request, limits and health check
