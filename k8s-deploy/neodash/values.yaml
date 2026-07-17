@@ -12,14 +12,44 @@ image:
   tag: 'latest'
 imagePullSecrets: [] # Image pull secret if any
 
-# Init containers
-initContainers: []
-
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
-podSecurityContext: {}
 
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+  seccompProfile:
+    type: RuntimeDefault
+containerSecurityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+      - CAP_NET_RAW
+
+initContainers:
+  - name: init-config
+    image: neo4jlabs/neodash:latest
+    imagePullPolicy: IfNotPresent
+    command:
+      - sh
+      - -c
+      - |
+        cp -r /usr/share/nginx/html/* /tmp/nginx-html && \
+        cp -r /etc/nginx/templates/* /tmp/nginx-config-templates && \
+        cp -r /etc/nginx/conf.d/* /tmp/nginx-conf-d
+    volumeMounts:
+      - name: nginx-html
+        mountPath: /tmp/nginx-html
+      - name: nginx-config-templates
+        mountPath: /tmp/nginx-config-templates
+      - name: nginx-conf-d
+        mountPath: /tmp/nginx-conf-d
 # Mode configuration using environment variables
 # Set reader mode environment variables when enable_reader_mode is true
 enable_reader_mode: true
@@ -50,15 +80,15 @@ env:
 # Environment variable from secret
 envFromSecrets: []
   # standaloneUsername:
-      # secretName: "neo4j-connection-secrets"
-      # key: "username"
+  # secretName: "neo4j-connection-secrets"
+  # key: "username"
   # standalonePassword:
-      # secretName: "neo4j-connection-secrets"
-      # key: "password"
+  # secretName: "neo4j-connection-secrets"
+# key: "password"
 
 # Service details
 service:
-  type: LoadBalancer # Can also be ClusterIP or NodePort
+  type: ClusterIP # Can also be ClusterIP or NodePort
   port: 5005 # For the service to listen in for Traffic
   targetPort: 5005 # Target port is the container port
   annotations: {} # Service annotations for the LoadBalance
@@ -72,7 +102,7 @@ ingress:
     # - host: neodash.example.com
     #   paths:
     #     - path: '/'
-    #       pathType: Prefix
+  #       pathType: Prefix
   tls: []
 
 # Pod resources request, limits and health check
@@ -100,9 +130,41 @@ autoscaling:
   # targetCPUUtilizationPercentage: 80
 
 # Pod Volumes
-volumes: []
-volumeMounts: []
-
+volumes:
+  - name: nginx-html
+    emptyDir:
+      sizeLimit: 100Mi
+  - name: nginx-config-templates
+    emptyDir:
+      sizeLimit: 10Mi
+  - name: nginx-conf-d
+    emptyDir:
+      sizeLimit: 10Mi
+  - name: nginx-cache
+    emptyDir:
+      medium: Memory
+      sizeLimit: 128Mi
+  - name: nginx-run
+    emptyDir:
+      medium: Memory
+      sizeLimit: 128Mi
+  - name: nginx-tmp
+    emptyDir:
+      medium: Memory
+      sizeLimit: 128Mi
+volumeMounts:
+  - name: nginx-html
+    mountPath: /usr/share/nginx/html
+  - name: nginx-config-templates
+    mountPath: /etc/nginx/templates
+  - name: nginx-conf-d
+    mountPath: /etc/nginx/conf.d
+  - name: nginx-cache
+    mountPath: /var/cache/nginx
+  - name: nginx-run
+    mountPath: /var/run
+  - name: nginx-tmp
+    mountPath: /tmp
 # Service Account
 serviceAccount:
   create: true
