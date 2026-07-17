@@ -13,13 +13,14 @@ image:
 imagePullSecrets: [] # Image pull secret if any
 
 # Init containers
+initContainers: []
 
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
 podSecurityContext: {}
 
-# Mode configuration using environment variables
+# Mode configuration using kenvironment variables
 # Set reader mode environment variables when enable_reader_mode is true
 enable_reader_mode: true
 env:
