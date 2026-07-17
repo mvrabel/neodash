@@ -50,11 +50,11 @@ env:
 # Environment variable from secret
 envFromSecrets: []
   # standaloneUsername:
-  # secretName: "neo4j-connection-secrets"
-  # key: "username"
+      # secretName: "neo4j-connection-secrets"
+      # key: "username"
   # standalonePassword:
-  # secretName: "neo4j-connection-secrets"
-# key: "password"
+      # secretName: "neo4j-connection-secrets"
+      # key: "password"
 
 # Service details
 service:
