@@ -33,33 +33,14 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "neodash.serviceAccountName" . }}
       automountServiceAccountToken: false
-      # 1. INIT CONTAINER: Creates a writable config.json file
-
+      {{- with .Values.initContainers }}
       initContainers:
-        - name: init-config
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          # Create an empty file and give it liberal write permissions so the entrypoint can overwrite it
-          command:
-            - sh
-            - -c
-            - |
-              cp -r /usr/share/nginx/html/* /tmp/nginx-html && \
-              cp -r /etc/nginx/templates/* /tmp/nginx-config-templates && \
-              cp -r /etc/nginx/conf.d/* /tmp/nginx-conf-d
-          volumeMounts:
-            - name: nginx-html
-              mountPath: /tmp/nginx-html
-            - name: nginx-config-templates
-              mountPath: /tmp/nginx-config-templates
-            - name: nginx-conf-d
-              mountPath: /tmp/nginx-conf-d
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-{{/*          command: [ "/bin/sh", "-c" ]*/}}
-{{/*          args: [ "sleep 7200" ]*/}}
           {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -93,38 +74,11 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
           volumeMounts:
-            - name: nginx-html
-              mountPath: /usr/share/nginx/html
-            - name: nginx-config-templates
-              mountPath: /etc/nginx/templates
-            - name: nginx-conf-d
-              mountPath: /etc/nginx/conf.d
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-run
-              mountPath: /var/run
-            - name: nginx-tmp
-              mountPath: /tmp
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
       volumes:
-        - name: nginx-html
-          emptyDir:
-            sizeLimit: 100Mi
-        - name: nginx-config-templates
-          emptyDir:
-            sizeLimit: 10Mi
-        - name: nginx-conf-d
-          emptyDir:
-            sizeLimit: 1Mi
-        - name: nginx-cache
-          emptyDir:
-            sizeLimit: 10Mi
-        - name: nginx-run
-          emptyDir:
-            sizeLimit: 10Mi
-        - name: nginx-tmp
-          emptyDir:
-            sizeLimit: 10Mi
-{{/*        - name: neodash-config*/}}
-{{/*          emptyDir:*/}}
-{{/*            sizeLimit: 10Mi*/}}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

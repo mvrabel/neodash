@@ -12,25 +12,12 @@ image:
   tag: 'latest'
 imagePullSecrets: [] # Image pull secret if any
 
+# Init containers
+
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
-
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 65534
-  runAsGroup: 65534
-  fsGroup: 65534
-  seccompProfile:
-    type: RuntimeDefault
-containerSecurityContext:
-  privileged: false
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop:
-      - ALL
-      - CAP_NET_RAW
+podSecurityContext: {}
 
 # Mode configuration using environment variables
 # Set reader mode environment variables when enable_reader_mode is true
@@ -62,15 +49,15 @@ env:
 # Environment variable from secret
 envFromSecrets: []
   # standaloneUsername:
-      # secretName: "neo4j-connection-secrets"
-      # key: "username"
+  # secretName: "neo4j-connection-secrets"
+  # key: "username"
   # standalonePassword:
-      # secretName: "neo4j-connection-secrets"
-      # key: "password"
+  # secretName: "neo4j-connection-secrets"
+# key: "password"
 
 # Service details
 service:
-  type: ClusterIP # Can also be ClusterIP or NodePort
+  type: LoadBalancer # Can also be ClusterIP or NodePort
   port: 5005 # For the service to listen in for Traffic
   targetPort: 5005 # Target port is the container port
   annotations: {} # Service annotations for the LoadBalance
@@ -84,7 +71,7 @@ ingress:
     # - host: neodash.example.com
     #   paths:
     #     - path: '/'
-    #       pathType: Prefix
+  #       pathType: Prefix
   tls: []
 
 # Pod resources request, limits and health check
@@ -112,26 +99,9 @@ autoscaling:
   # targetCPUUtilizationPercentage: 80
 
 # Pod Volumes
-volumes:
-  - name: nginx-html
-    emptyDir:
-      sizeLimit: 100Mi
-  - name: nginx-config-templates
-    emptyDir:
-      sizeLimit: 10Mi
-  - name: nginx-conf-d
-    emptyDir:
-      sizeLimit: 1Mi
-  - name: nginx-cache
-    emptyDir:
-      sizeLimit: 10Mi
-  - name: nginx-run
-    emptyDir:
-      sizeLimit: 10Mi
-  - name: nginx-tmp
-    emptyDir:
-      sizeLimit: 10Mi
+volumes: []
 volumeMounts: []
+
 # Service Account
 serviceAccount:
   create: true
