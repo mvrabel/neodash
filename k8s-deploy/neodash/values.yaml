@@ -20,7 +20,7 @@ podAnnotations: {}
 podLabels: {}
 podSecurityContext: {}
 
-# Mode configuration using kenvironment variables
+# Mode configuration using environment variables
 # Set reader mode environment variables when enable_reader_mode is true
 enable_reader_mode: true
 env:
@@ -50,11 +50,11 @@ env:
 # Environment variable from secret
 envFromSecrets: []
   # standaloneUsername:
-      # secretName: "neo4j-connection-secrets"
-      # key: "username"
+  # secretName: "neo4j-connection-secrets"
+  # key: "username"
   # standalonePassword:
-      # secretName: "neo4j-connection-secrets"
-      # key: "password"
+  # secretName: "neo4j-connection-secrets"
+# key: "password"
 
 # Service details
 service:
