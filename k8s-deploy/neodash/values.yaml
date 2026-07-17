@@ -12,6 +12,9 @@ image:
   tag: 'latest'
 imagePullSecrets: [] # Image pull secret if any
 
+# Init containers
+initContainers: []
+
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
