@@ -15,15 +15,27 @@ imagePullSecrets: [] # Image pull secret if any
 # Pod annotations, labels and security context
 podAnnotations: {}
 podLabels: {}
-podSecurityContext: {}
 
-# Container security context
-containerSecurityContext: {}
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+  seccompProfile:
+    type: RuntimeDefault
+containerSecurityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+      - CAP_NET_RAW
 
 # Mode configuration using environment variables
 # Set reader mode environment variables when enable_reader_mode is true
 enable_reader_mode: true
-env: 
+env:
   - name: "ssoEnabled"
     value: "false"
   - name: "standalone"
@@ -49,16 +61,16 @@ env:
 
 # Environment variable from secret
 envFromSecrets: []
-  # standaloneUsername: 
+  # standaloneUsername:
       # secretName: "neo4j-connection-secrets"
       # key: "username"
-  # standalonePassword: 
+  # standalonePassword:
       # secretName: "neo4j-connection-secrets"
       # key: "password"
 
 # Service details
 service:
-  type: LoadBalancer # Can also be ClusterIP or NodePort  
+  type: ClusterIP # Can also be ClusterIP or NodePort
   port: 5005 # For the service to listen in for Traffic
   targetPort: 5005 # Target port is the container port
   annotations: {} # Service annotations for the LoadBalance
@@ -76,7 +88,7 @@ ingress:
   tls: []
 
 # Pod resources request, limits and health check
-resources: 
+resources:
   requests:
     memory: "64Mi"
     cpu: "250m"
@@ -100,9 +112,26 @@ autoscaling:
   # targetCPUUtilizationPercentage: 80
 
 # Pod Volumes
-volumes: []
+volumes:
+  - name: nginx-html
+    emptyDir:
+      sizeLimit: 100Mi
+  - name: nginx-config-templates
+    emptyDir:
+      sizeLimit: 10Mi
+  - name: nginx-conf-d
+    emptyDir:
+      sizeLimit: 1Mi
+  - name: nginx-cache
+    emptyDir:
+      sizeLimit: 10Mi
+  - name: nginx-run
+    emptyDir:
+      sizeLimit: 10Mi
+  - name: nginx-tmp
+    emptyDir:
+      sizeLimit: 10Mi
 volumeMounts: []
-
 # Service Account
 serviceAccount:
   create: true
