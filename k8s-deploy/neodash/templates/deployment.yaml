@@ -35,6 +35,11 @@ spec:
       automountServiceAccountToken: false
       {{- with .Values.initContainers }}
       initContainers:
+        {{- range . }}
+        {{- if $.Values.containerSecurityContext }}
+        {{- $_ := set . "securityContext" $.Values.containerSecurityContext }}
+        {{- end }}
+        {{- end }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:

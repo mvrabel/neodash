@@ -1,6 +1,6 @@
 # Name override or full name override
 nameOverride: ''
-fullnameOverride: neodash-test
+fullnameOverride: neodash
 
 # Number of pods
 replicaCount: 1
@@ -16,40 +16,9 @@ imagePullSecrets: [] # Image pull secret if any
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 65534
-  runAsGroup: 65534
-  fsGroup: 65534
-  seccompProfile:
-    type: RuntimeDefault
-containerSecurityContext:
-  privileged: false
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop:
-      - ALL
-      - CAP_NET_RAW
-
-initContainers:
-  - name: init-config
-    image: neo4jlabs/neodash:latest
-    imagePullPolicy: IfNotPresent
-    command:
-      - sh
-      - -c
-      - |
-        cp -r /usr/share/nginx/html/* /tmp/nginx-html && \
-        cp -r /etc/nginx/templates/* /tmp/nginx-config-templates && \
-        cp -r /etc/nginx/conf.d/* /tmp/nginx-conf-d
-    volumeMounts:
-      - name: nginx-html
-        mountPath: /tmp/nginx-html
-      - name: nginx-config-templates
-        mountPath: /tmp/nginx-config-templates
-      - name: nginx-conf-d
-        mountPath: /tmp/nginx-conf-d
+podSecurityContext: {}
+containerSecurityContext: {}
+initContainers: []
 # Mode configuration using environment variables
 # Set reader mode environment variables when enable_reader_mode is true
 enable_reader_mode: true
@@ -130,41 +99,8 @@ autoscaling:
   # targetCPUUtilizationPercentage: 80
 
 # Pod Volumes
-volumes:
-  - name: nginx-html
-    emptyDir:
-      sizeLimit: 100Mi
-  - name: nginx-config-templates
-    emptyDir:
-      sizeLimit: 10Mi
-  - name: nginx-conf-d
-    emptyDir:
-      sizeLimit: 10Mi
-  - name: nginx-cache
-    emptyDir:
-      medium: Memory
-      sizeLimit: 128Mi
-  - name: nginx-run
-    emptyDir:
-      medium: Memory
-      sizeLimit: 128Mi
-  - name: nginx-tmp
-    emptyDir:
-      medium: Memory
-      sizeLimit: 128Mi
-volumeMounts:
-  - name: nginx-html
-    mountPath: /usr/share/nginx/html
-  - name: nginx-config-templates
-    mountPath: /etc/nginx/templates
-  - name: nginx-conf-d
-    mountPath: /etc/nginx/conf.d
-  - name: nginx-cache
-    mountPath: /var/cache/nginx
-  - name: nginx-run
-    mountPath: /var/run
-  - name: nginx-tmp
-    mountPath: /tmp
+volumes: []
+volumeMounts: []
 # Service Account
 serviceAccount:
   create: true
